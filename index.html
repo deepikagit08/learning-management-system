@@ -1,0 +1,3553 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>LevelUP LMS — Admin Dashboard</title>
+
+<style>
+
+ /* ── CSS Variables ─────────────────────────────────────────── */
+
+ :root {
+
+     --primary-orange: #F97316;
+
+     --primary-purple: #7C3AED;
+
+     --accent-blue: #3B82F6;
+
+     --dark:       #0F172A;
+
+     --bg:        #F1F5F9;
+
+     --card-bg:     #FFFFFF;
+
+     --border:      #E2E8F0;
+
+     --text-primary: #0F172A;
+
+     --text-muted: #64748B;
+
+     --success:      #10B981;
+
+     --danger:      #EF4444;
+
+     --sidebar-w:     260px;
+
+     --sidebar-w-col: 68px;
+
+     --header-h:     64px;
+
+     --radius:      12px;
+
+     --radius-sm:     8px;
+
+     --shadow:       0 2px 12px rgba(0,0,0,.08);
+
+     --shadow-md:      0 4px 24px rgba(0,0,0,.12);
+
+ }
+
+
+
+ /* ── Reset & Base ──────────────────────────────────────────── */
+
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+ html { font-size: 15px; }
+
+ body {
+
+     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+     background: var(--bg);
+
+     color: var(--text-primary);
+
+     min-height: 100vh;
+    overflow-x: hidden;
+
+}
+
+a { text-decoration: none; color: inherit; }
+
+button { cursor: pointer; font-family: inherit; }
+
+input, select, textarea { font-family: inherit; }
+
+
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+
+::-webkit-scrollbar-track { background: transparent; }
+
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+
+
+
+/* ═══════════════════════════════════════════════════════════
+
+    HEADER
+
+══════════════════════════════════════════════════════════════ */
+
+.header {
+
+    position: fixed;
+
+    top: 0; left: 0; right: 0;
+
+    height: var(--header-h);
+
+    background: rgba(255,255,255,.85);
+
+    backdrop-filter: blur(16px);
+
+    -webkit-backdrop-filter: blur(16px);
+
+    border-bottom: 1px solid var(--border);
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 20px 0 0;
+
+    gap: 16px;
+
+    z-index: 1000;
+
+    box-shadow: 0 1px 8px rgba(0,0,0,.06);
+
+}
+
+
+
+/* Logo slot — same width as sidebar */
+
+.header-logo {
+
+    width: var(--sidebar-w);
+
+    min-width: var(--sidebar-w);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+    padding: 0 20px;
+
+    transition: width .3s;
+
+}
+
+body.sidebar-collapsed .header-logo {
+
+    width: var(--sidebar-w-col);
+
+    min-width: var(--sidebar-w-col);
+
+}
+
+.logo-icon {
+
+    width: 36px; height: 36px;
+
+    background: linear-gradient(135deg, var(--primary-orange), var(--primary-purple));
+
+    border-radius: 10px;
+
+    display: flex; align-items: center; justify-content: center;
+
+    color: #fff;
+
+    font-size: 18px;
+
+    font-weight: 900;
+
+    flex-shrink: 0;
+
+}
+
+.logo-text {
+
+    font-size: 1.2rem;
+
+    font-weight: 800;
+
+    background: linear-gradient(90deg, var(--primary-orange), var(--primary-purple));
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+    background-clip: text;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    transition: opacity .25s, width .3s;
+
+}
+
+body.sidebar-collapsed .logo-text {
+
+    opacity: 0;
+
+    width: 0;
+
+    pointer-events: none;
+
+}
+
+
+
+/* Global search */
+
+.header-search {
+
+    flex: 1;
+    max-width: 440px;
+
+    position: relative;
+
+}
+
+.header-search input {
+
+    width: 100%;
+
+    padding: 9px 16px 9px 42px;
+
+    border: 1.5px solid var(--border);
+
+    border-radius: 24px;
+
+    background: var(--bg);
+
+    font-size: .875rem;
+
+    color: var(--text-primary);
+
+    outline: none;
+
+    transition: border-color .2s, box-shadow .2s;
+
+}
+
+.header-search input:focus {
+
+    border-color: var(--primary-orange);
+
+    box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+
+}
+
+.header-search .search-icon {
+
+    position: absolute;
+
+    left: 14px; top: 50%;
+
+    transform: translateY(-50%);
+
+    color: var(--text-muted);
+
+    font-size: 1rem;
+
+    pointer-events: none;
+
+}
+
+
+
+/* Right section */
+
+.header-right {
+
+    margin-left: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+
+/* Bell */
+
+.bell-btn {
+    position: relative;
+
+    background: none;
+
+    border: none;
+
+    width: 40px; height: 40px;
+
+    border-radius: 50%;
+
+    display: flex; align-items: center; justify-content: center;
+
+    font-size: 1.25rem;
+
+    color: var(--text-muted);
+
+    transition: background .2s;
+
+}
+
+.bell-btn:hover { background: var(--bg); color: var(--text-primary); }
+
+.bell-badge {
+
+    position: absolute;
+
+    top: 4px; right: 4px;
+
+    background: var(--danger);
+
+    color: #fff;
+
+    font-size: .6rem;
+
+    font-weight: 700;
+
+    width: 17px; height: 17px;
+
+    border-radius: 50%;
+
+    display: flex; align-items: center; justify-content: center;
+
+    border: 2px solid #fff;
+
+}
+
+
+
+/* Notification dropdown */
+
+.notif-dropdown {
+
+    position: absolute;
+
+    top: calc(var(--header-h) + 4px);
+
+    right: 100px;
+
+    width: 320px;
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow-md);
+
+    z-index: 2000;
+
+    display: none;
+
+    overflow: hidden;
+}
+
+.notif-dropdown.open { display: block; animation: fadeDown .18s ease; }
+
+.notif-header {
+
+    padding: 14px 16px;
+
+    border-bottom: 1px solid var(--border);
+
+    font-weight: 700;
+
+    font-size: .9rem;
+
+    display: flex; align-items: center; justify-content: space-between;
+
+}
+
+.notif-item {
+
+    display: flex; gap: 10px;
+
+    padding: 12px 16px;
+
+    border-bottom: 1px solid #F8FAFC;
+
+    align-items: flex-start;
+
+    transition: background .15s;
+
+}
+
+.notif-item:hover { background: var(--bg); }
+
+.notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary-orange); margin-top: 5px; flex-shrink: 0; }
+
+.notif-text { font-size: .82rem; line-height: 1.45; color: var(--text-primary); }
+
+.notif-time { font-size: .75rem; color: var(--text-muted); margin-top: 2px; }
+
+
+
+/* Profile */
+
+.profile-wrapper { position: relative; }
+
+.profile-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    background: none;
+
+    border: 1.5px solid var(--border);
+
+    border-radius: 24px;
+
+    padding: 5px 12px 5px 5px;
+
+    cursor: pointer;
+
+    transition: border-color .2s, box-shadow .2s;
+
+}
+
+.profile-btn:hover { border-color: var(--primary-purple); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+
+.avatar {
+
+    width: 32px; height: 32px;
+    border-radius: 50%;
+
+    display: flex; align-items: center; justify-content: center;
+
+    font-weight: 700;
+
+    font-size: .78rem;
+
+    color: #fff;
+
+    flex-shrink: 0;
+
+}
+
+.avatar-admin { background: linear-gradient(135deg, var(--primary-purple), #9333EA); }
+
+.avatar-ins { background: linear-gradient(135deg, var(--primary-orange), #FB923C); }
+
+.avatar-stu { background: linear-gradient(135deg, var(--accent-blue), #60A5FA); }
+
+.profile-name { font-size: .84rem; font-weight: 600; }
+
+.profile-chevron { font-size: .7rem; color: var(--text-muted); transition: transform .2s; }
+
+.profile-btn.open .profile-chevron { transform: rotate(180deg); }
+
+
+
+.profile-dropdown {
+
+    position: absolute;
+
+    top: calc(100% + 8px);
+
+    right: 0;
+
+    width: 220px;
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow-md);
+
+    z-index: 2000;
+
+    display: none;
+
+    overflow: hidden;
+
+}
+
+.profile-dropdown.open { display: block; animation: fadeDown .18s ease; }
+
+.profile-dd-header {
+
+    padding: 16px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    border-bottom: 1px solid var(--border);
+
+}
+
+.profile-dd-name { font-weight: 700; font-size: .95rem; }
+
+.profile-dd-email { font-size: .78rem; color: var(--text-muted); }
+.role-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 2px 8px;
+
+    border-radius: 20px;
+
+    font-size: .7rem;
+
+    font-weight: 700;
+
+    letter-spacing: .04em;
+
+}
+
+.badge-admin { background: rgba(124,58,237,.12); color: var(--primary-purple); }
+
+.badge-ins { background: rgba(249,115,22,.12); color: var(--primary-orange); }
+
+.badge-stu { background: rgba(59,130,246,.12); color: var(--accent-blue); }
+
+.badge-active { background: rgba(16,185,129,.12); color: var(--success); }
+
+.badge-inactive { background: rgba(239,68,68,.12); color: var(--danger); }
+
+.profile-dd-item {
+
+    display: flex; align-items: center; gap: 10px;
+
+    padding: 10px 16px;
+
+    font-size: .85rem;
+
+    color: var(--text-primary);
+
+    transition: background .15s;
+
+    cursor: pointer;
+
+}
+
+.profile-dd-item:hover { background: var(--bg); }
+
+.profile-dd-item.danger { color: var(--danger); }
+
+
+
+@keyframes fadeDown {
+
+    from { opacity: 0; transform: translateY(-8px); }
+
+    to { opacity: 1; transform: translateY(0); }
+
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════
+
+    SIDEBAR
+
+══════════════════════════════════════════════════════════════ */
+
+.sidebar {
+
+    position: fixed;
+
+    top: var(--header-h);
+
+    left: 0;
+    bottom: 0;
+
+    width: var(--sidebar-w);
+
+    background: var(--dark);
+
+    display: flex;
+
+    flex-direction: column;
+
+    z-index: 900;
+
+    transition: width .3s cubic-bezier(.4,0,.2,1);
+
+    overflow: hidden;
+
+}
+
+body.sidebar-collapsed .sidebar { width: var(--sidebar-w-col); }
+
+
+
+.sidebar-toggle {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    padding: 12px 14px;
+
+    border-bottom: 1px solid rgba(255,255,255,.06);
+
+}
+
+.toggle-btn {
+
+    background: rgba(255,255,255,.08);
+
+    border: none;
+
+    color: #94A3B8;
+
+    width: 34px; height: 34px;
+
+    border-radius: var(--radius-sm);
+
+    display: flex; align-items: center; justify-content: center;
+
+    font-size: 1.1rem;
+
+    transition: background .2s, color .2s;
+
+}
+
+.toggle-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+
+
+.sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+
+.nav-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 11px 12px;
+
+    border-radius: var(--radius-sm);
+    color: #94A3B8;
+
+    cursor: pointer;
+
+    transition: background .2s, color .2s;
+
+    white-space: nowrap;
+
+    border: none;
+
+    background: none;
+
+    width: 100%;
+
+    font-size: .88rem;
+
+    font-weight: 500;
+
+    text-align: left;
+
+}
+
+.nav-item:hover { background: rgba(255,255,255,.07); color: #E2E8F0; }
+
+.nav-item.active {
+
+    background: rgba(249,115,22,.15);
+
+    color: var(--primary-orange);
+
+    font-weight: 600;
+
+}
+
+.nav-item.active .nav-icon { color: var(--primary-orange); }
+
+.nav-icon { font-size: 1.15rem; flex-shrink: 0; width: 22px; text-align: center; }
+
+.nav-label { transition: opacity .25s, width .3s; }
+
+body.sidebar-collapsed .nav-label { opacity: 0; width: 0; overflow: hidden; pointer-events: none; }
+
+
+
+.sidebar-footer {
+
+    padding: 14px 10px;
+
+    border-top: 1px solid rgba(255,255,255,.06);
+
+}
+
+.sidebar-version { font-size: .72rem; color: #475569; padding: 6px 12px; white-space: nowrap; }
+
+
+
+/* ═══════════════════════════════════════════════════════════
+
+    MAIN LAYOUT
+
+══════════════════════════════════════════════════════════════ */
+
+.main-wrapper {
+
+    margin-top: var(--header-h);
+
+    margin-left: var(--sidebar-w);
+
+    padding: 28px 28px 48px;
+
+    min-height: calc(100vh - var(--header-h));
+
+    transition: margin-left .3s cubic-bezier(.4,0,.2,1);
+}
+
+body.sidebar-collapsed .main-wrapper { margin-left: var(--sidebar-w-col); }
+
+
+
+/* Section visibility */
+
+.section { display: none; }
+
+.section.active { display: block; }
+
+
+
+/* Page header */
+
+.page-header { margin-bottom: 24px; }
+
+.page-header h1 { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
+
+.page-header p { font-size: .875rem; color: var(--text-muted); margin-top: 4px; }
+
+
+
+/* Card */
+
+.card {
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════
+
+    SECTION A — USER MANAGEMENT
+
+══════════════════════════════════════════════════════════════ */
+
+.table-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 18px 20px;
+
+    border-bottom: 1px solid var(--border);
+
+    flex-wrap: wrap;
+
+}
+
+.search-input-wrap {
+
+    position: relative;
+
+    flex: 1;
+
+    min-width: 200px;
+
+}
+
+.search-input-wrap .s-icon {
+     position: absolute;
+
+     left: 12px; top: 50%;
+
+     transform: translateY(-50%);
+
+     color: var(--text-muted);
+
+     pointer-events: none;
+
+ }
+
+ .search-input-wrap input {
+
+     width: 100%;
+
+     padding: 9px 14px 9px 36px;
+
+     border: 1.5px solid var(--border);
+
+     border-radius: var(--radius-sm);
+
+     font-size: .85rem;
+
+     outline: none;
+
+     transition: border-color .2s;
+
+ }
+
+ .search-input-wrap input:focus { border-color: var(--primary-orange); }
+
+
+
+ select.filter-select {
+
+     padding: 9px 32px 9px 12px;
+
+     border: 1.5px solid var(--border);
+
+     border-radius: var(--radius-sm);
+
+     font-size: .85rem;
+
+     background: var(--card-bg);
+
+     color: var(--text-primary);
+
+     outline: none;
+
+     cursor: pointer;
+
+     appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'
+fill='none' stroke='%2364748B' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+
+     background-repeat: no-repeat;
+
+     background-position: right 10px center;
+
+     transition: border-color .2s;
+
+ }
+
+ select.filter-select:focus { border-color: var(--primary-orange); }
+
+
+
+ .btn {
+
+     display: inline-flex;
+
+     align-items: center;
+    gap: 6px;
+
+    padding: 9px 18px;
+
+    border-radius: var(--radius-sm);
+
+    font-size: .85rem;
+
+    font-weight: 600;
+
+    border: none;
+
+    cursor: pointer;
+
+    transition: opacity .2s, transform .15s, box-shadow .2s;
+
+}
+
+.btn:hover { opacity: .88; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+
+.btn:active { transform: translateY(0); }
+
+.btn-purple { background: var(--primary-purple); color: #fff; }
+
+.btn-orange { background: var(--primary-orange); color: #fff; }
+
+.btn-danger { background: var(--danger); color: #fff; }
+
+.btn-ghost { background: var(--bg); color: var(--text-primary); border: 1.5px solid var(--border); }
+
+
+
+/* Table */
+
+.table-wrap { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: .855rem; }
+
+thead th {
+
+    padding: 12px 16px;
+
+    text-align: left;
+
+    font-size: .75rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .06em;
+
+    color: var(--text-muted);
+
+    background: #F8FAFC;
+
+    border-bottom: 1px solid var(--border);
+
+    cursor: pointer;
+
+    user-select: none;
+
+    white-space: nowrap;
+
+}
+
+thead th:hover { color: var(--text-primary); }
+
+thead th .sort-arrow { margin-left: 4px; opacity: .45; transition: opacity .15s; }
+
+thead th.sort-asc .sort-arrow::after { content: ' ↑'; opacity: 1; }
+
+thead th.sort-desc .sort-arrow::after { content: ' ↓'; opacity: 1; }
+thead th .sort-arrow::after { content: ' ↕'; }
+
+
+
+tbody tr {
+
+    border-bottom: 1px solid #F1F5F9;
+
+    transition: background .15s;
+
+}
+
+tbody tr:last-child { border-bottom: none; }
+
+tbody tr:hover { background: #F8FAFC; }
+
+td { padding: 13px 16px; vertical-align: middle; }
+
+
+
+.user-cell { display: flex; align-items: center; gap: 10px; }
+
+.user-info-name { font-weight: 600; font-size: .875rem; }
+
+.user-info-email { font-size: .78rem; color: var(--text-muted); }
+
+
+
+.action-btn {
+
+    background: none;
+
+    border: 1.5px solid var(--border);
+
+    border-radius: 6px;
+
+    padding: 5px 10px;
+
+    font-size: .8rem;
+
+    cursor: pointer;
+
+    transition: all .2s;
+
+    display: inline-flex; align-items: center; gap: 4px;
+
+}
+
+.action-btn.edit { color: var(--accent-blue); }
+
+.action-btn.edit:hover { background: rgba(59,130,246,.08); border-color: var(--accent-blue); }
+
+.action-btn.del { color: var(--danger); }
+
+.action-btn.del:hover { background: rgba(239,68,68,.08); border-color: var(--danger); }
+
+
+
+.table-empty {
+
+    text-align: center;
+
+    padding: 40px;
+
+    color: var(--text-muted);
+
+    font-size: .9rem;
+
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════
+    SECTION B — STATS + ACTIVITY
+
+══════════════════════════════════════════════════════════════ */
+
+.stats-activity-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 380px;
+
+    gap: 24px;
+
+    margin-top: 28px;
+
+}
+
+
+
+/* Stats */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 16px;
+
+}
+
+.stat-card {
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 22px;
+
+    box-shadow: var(--shadow);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    transition: transform .2s, box-shadow .2s;
+
+}
+
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+.stat-top { display: flex; align-items: flex-start; justify-content: space-between; }
+
+.stat-icon {
+
+    width: 46px; height: 46px;
+
+    border-radius: 12px;
+
+    display: flex; align-items: center; justify-content: center;
+
+    font-size: 1.35rem;
+
+}
+
+.stat-icon-green { background: rgba(16,185,129,.12); }
+
+.stat-icon-blue { background: rgba(59,130,246,.12); }
+
+.stat-icon-orange { background: rgba(249,115,22,.12); }
+.stat-icon-purple { background: rgba(124,58,237,.12); }
+
+.stat-value { font-size: 1.9rem; font-weight: 800; color: var(--text-primary); }
+
+.stat-label { font-size: .82rem; color: var(--text-muted); font-weight: 500; }
+
+.stat-trend {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 3px;
+
+    font-size: .75rem;
+
+    font-weight: 600;
+
+    padding: 3px 8px;
+
+    border-radius: 20px;
+
+}
+
+.trend-up { background: rgba(16,185,129,.12); color: var(--success); }
+
+.trend-blue { background: rgba(59,130,246,.12); color: var(--accent-blue); }
+
+.trend-org { background: rgba(249,115,22,.12); color: var(--primary-orange); }
+
+.trend-pur { background: rgba(124,58,237,.12); color: var(--primary-purple); }
+
+
+
+/* Activity Feed */
+
+.activity-card {
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+}
+
+.activity-header {
+
+    padding: 18px 20px 14px;
+
+    border-bottom: 1px solid var(--border);
+
+    display: flex; align-items: center; gap: 10px;
+
+}
+
+.activity-header h3 { font-size: 1rem; font-weight: 700; }
+
+.live-indicator {
+
+    display: flex; align-items: center; gap: 5px;
+
+    font-size: .7rem; font-weight: 700;
+
+    color: var(--success);
+    letter-spacing: .06em;
+
+}
+
+.live-dot {
+
+    width: 8px; height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--success);
+
+    animation: pulse 1.6s infinite;
+
+}
+
+@keyframes pulse {
+
+    0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,.5); }
+
+    50%     { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+
+}
+
+.activity-list { padding: 10px 0; overflow-y: auto; flex: 1; }
+
+.activity-item {
+
+    display: flex;
+
+    gap: 12px;
+
+    padding: 12px 20px;
+
+    border-left: 3px solid transparent;
+
+    transition: background .15s, border-color .15s;
+
+}
+
+.activity-item:hover { background: #F8FAFC; border-left-color: var(--primary-orange); }
+
+.activity-emoji { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+.activity-text { font-size: .83rem; line-height: 1.45; color: var(--text-primary); }
+
+.activity-time { font-size: .75rem; color: var(--text-muted); margin-top: 2px; }
+
+
+
+/* ═══════════════════════════════════════════════════════════
+
+    SECTION C — PERFORMANCE ANALYTICS
+
+══════════════════════════════════════════════════════════════ */
+
+.analytics-cards {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 24px;
+
+}
+
+.analytics-card {
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    padding: 24px;
+
+}
+
+.analytics-card h3 {
+
+    font-size: .9rem;
+
+    font-weight: 700;
+
+    color: var(--text-primary);
+
+    margin-bottom: 20px;
+
+}
+
+
+
+/* Donut chart */
+
+.donut-wrap {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 16px;
+
+}
+
+.donut-chart {
+
+    position: relative;
+
+    width: 140px; height: 140px;
+
+}
+
+.donut-svg { transform: rotate(-90deg); }
+
+.donut-track { fill: none; stroke: #F1F5F9; stroke-width: 14; }
+
+.donut-fill {
+
+    fill: none;
+
+    stroke-width: 14;
+
+    stroke-linecap: round;
+
+    stroke: url(#donutGrad);
+
+    stroke-dasharray: 339.3;
+
+    stroke-dashoffset: 95;
+
+    transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1);
+
+}
+
+.donut-label {
+
+    position: absolute;
+
+    top: 50%; left: 50%;
+
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+}
+
+.donut-pct { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); }
+
+.donut-sub { font-size: .72rem; color: var(--text-muted); }
+
+.donut-legend { width: 100%; display: flex; flex-direction: column; gap: 7px; }
+
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: .8rem; }
+
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+.legend-label { color: var(--text-muted); flex: 1; }
+
+.legend-val { font-weight: 600; }
+
+
+
+/* Bar chart */
+
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+
+.bar-row { display: flex; align-items: center; gap: 10px; font-size: .8rem; }
+
+.bar-label { width: 18px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
+
+.bar-track {
+
+    flex: 1;
+
+    height: 12px;
+
+    background: #F1F5F9;
+
+    border-radius: 6px;
+
+    overflow: hidden;
+
+}
+
+.bar-fill {
+
+    height: 100%;
+
+    border-radius: 6px;
+
+    transition: width 1s ease;
+
+}
+
+.bar-pct { width: 36px; text-align: right; font-weight: 600; color: var(--text-primary); }
+
+.bar-a { background: linear-gradient(90deg, var(--success), #34D399); }
+
+.bar-b { background: linear-gradient(90deg, var(--accent-blue), #60A5FA); }
+
+.bar-c { background: linear-gradient(90deg, var(--primary-orange), #FB923C); }
+
+.bar-d { background: linear-gradient(90deg, #F59E0B, #FCD34D); }
+
+.bar-f { background: linear-gradient(90deg, var(--danger), #F87171); }
+
+
+
+/* Area chart (canvas) */
+
+.canvas-wrap { width: 100%; }
+
+
+
+/* Quick stats */
+.quick-stats {
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 16px;
+
+}
+
+.qs-card {
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 18px 20px;
+
+    box-shadow: var(--shadow);
+
+    text-align: center;
+
+    transition: transform .2s, box-shadow .2s;
+
+}
+
+.qs-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.qs-value { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); }
+
+.qs-label { font-size: .78rem; color: var(--text-muted); margin-top: 4px; }
+
+
+
+/* Settings & Placeholder sections */
+
+.placeholder-section {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 16px;
+
+    padding: 80px 20px;
+
+    text-align: center;
+
+}
+
+.placeholder-section .ph-icon { font-size: 3.5rem; }
+
+.placeholder-section h2 { font-size: 1.3rem; font-weight: 700; }
+
+.placeholder-section p { font-size: .9rem; color: var(--text-muted); max-width: 380px; }
+
+
+
+/* ═══════════════════════════════════════════════════════════
+
+    MODAL
+
+══════════════════════════════════════════════════════════════ */
+
+.modal-overlay {
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(15,23,42,.55);
+
+    backdrop-filter: blur(4px);
+
+    z-index: 3000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+.modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+
+
+.modal {
+
+    background: var(--card-bg);
+
+    border-radius: 16px;
+
+    width: 480px;
+
+    max-width: 95vw;
+
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+
+    animation: slideUp .22s ease;
+
+}
+
+@keyframes slideUp {
+
+    from { opacity: 0; transform: translateY(24px); }
+
+    to { opacity: 1; transform: translateY(0); }
+
+}
+
+.modal-header {
+
+    padding: 22px 24px 18px;
+
+    border-bottom: 1px solid var(--border);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+.modal-header h2 { font-size: 1.1rem; font-weight: 800; }
+
+.modal-close {
+
+    background: var(--bg);
+
+    border: none;
+
+    width: 32px; height: 32px;
+
+    border-radius: 8px;
+
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+
+    cursor: pointer;
+
+    color: var(--text-muted);
+
+    transition: background .2s, color .2s;
+
+}
+
+.modal-close:hover { background: #E2E8F0; color: var(--text-primary); }
+
+.modal-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.form-label { font-size: .82rem; font-weight: 600; color: var(--text-primary); }
+
+.form-input {
+
+    padding: 10px 14px;
+
+    border: 1.5px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    font-size: .88rem;
+
+    outline: none;
+
+    color: var(--text-primary);
+
+    transition: border-color .2s, box-shadow .2s;
+
+}
+
+.form-input:focus { border-color: var(--primary-purple); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+
+.form-input.error { border-color: var(--danger); }
+
+.form-error { font-size: .77rem; color: var(--danger); display: none; }
+
+.form-error.show { display: block; }
+
+.modal-footer {
+
+    padding: 16px 24px 22px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════
+
+    TOAST
+
+══════════════════════════════════════════════════════════════ */
+
+.toast-container {
+
+    position: fixed;
+
+    top: calc(var(--header-h) + 16px);
+
+    right: 20px;
+
+    z-index: 9999;
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+.toast {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    background: var(--dark);
+
+    color: #fff;
+
+    padding: 12px 18px;
+
+    border-radius: var(--radius);
+
+    font-size: .855rem;
+
+    font-weight: 500;
+
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+
+    animation: slideInRight .3s ease;
+
+    max-width: 340px;
+
+}
+
+.toast.success { border-left: 4px solid var(--success); }
+
+.toast.error { border-left: 4px solid var(--danger); }
+
+.toast.info { border-left: 4px solid var(--accent-blue); }
+
+@keyframes slideInRight {
+
+    from { opacity: 0; transform: translateX(60px); }
+
+    to { opacity: 1; transform: translateX(0); }
+
+}
+
+@keyframes slideOutRight {
+
+    from { opacity: 1; transform: translateX(0); }
+
+    to { opacity: 0; transform: translateX(60px); }
+
+}
+
+
+
+/* ── Confirm Dialog ──────────────────────────────────────── */
+
+.confirm-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(15,23,42,.5);
+
+    backdrop-filter: blur(4px);
+
+    z-index: 4000;
+     display: none;
+
+     align-items: center;
+
+     justify-content: center;
+
+ }
+
+ .confirm-overlay.open { display: flex; animation: fadeIn .18s ease; }
+
+ .confirm-box {
+
+     background: var(--card-bg);
+
+     border-radius: var(--radius);
+
+     padding: 28px 30px;
+
+     width: 360px;
+
+     max-width: 95vw;
+
+     box-shadow: 0 16px 48px rgba(0,0,0,.22);
+
+     text-align: center;
+
+     animation: slideUp .2s ease;
+
+ }
+
+ .confirm-icon { font-size: 2.4rem; margin-bottom: 12px; }
+
+ .confirm-box h3 { font-size: 1rem; font-weight: 800; margin-bottom: 8px; }
+
+ .confirm-box p { font-size: .85rem; color: var(--text-muted); margin-bottom: 22px; }
+
+ .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<!-- ══════════════════════════════════════════
+
+  HEADER
+
+══════════════════════════════════════════ -->
+
+<header class="header">
+
+<div class="header-logo">
+
+ <div class="logo-icon">⬆</div>
+
+ <span class="logo-text">LevelUP</span>
+
+</div>
+
+
+
+<div class="header-search">
+
+ <span class="search-icon">          </span>
+
+ <input type="text" placeholder="Search courses, users, content…" id="globalSearch" />
+
+</div>
+<div class="header-right">
+
+<!-- Bell -->
+
+<div style="position:relative;">
+
+ <button class="bell-btn" id="bellBtn" title="Notifications">
+
+
+
+  <span class="bell-badge">3</span>
+
+ </button>
+
+ <div class="notif-dropdown" id="notifDropdown">
+
+  <div class="notif-header">
+
+   Notifications
+
+   <span style="font-size:.76rem;color:var(--primary-purple);cursor:pointer;font-weight:600;">Mark all read</span>
+
+  </div>
+
+  <div class="notif-item">
+
+   <div class="notif-dot"></div>
+
+   <div><div class="notif-text">New user registered: Carol Davis</div><div class="notif-time">2 min ago</div></div>
+
+  </div>
+
+  <div class="notif-item">
+
+   <div class="notif-dot" style="background:var(--accent-blue)"></div>
+
+   <div><div class="notif-text">Course "Python Basics" pending review</div><div class="notif-time">14 min ago</div></div>
+
+  </div>
+
+  <div class="notif-item">
+
+   <div class="notif-dot" style="background:var(--success)"></div>
+
+   <div><div class="notif-text">Monthly report ready to download</div><div class="notif-time">1 hr ago</div></div>
+
+  </div>
+
+ </div>
+
+</div>
+
+
+
+<!-- Profile -->
+
+<div class="profile-wrapper">
+
+ <button class="profile-btn" id="profileBtn">
+
+  <div class="avatar avatar-admin">AJ</div>
+
+  <span class="profile-name">Alice Johnson</span>
+
+  <span class="profile-chevron">▼</span>
+
+ </button>
+
+ <div class="profile-dropdown" id="profileDropdown">
+
+  <div class="profile-dd-header">
+
+   <span class="profile-dd-name">Alice Johnson</span>
+    <span class="profile-dd-email">alice@levelup.com</span>
+
+    <span class="role-badge badge-admin" style="margin-top:4px;">ADMIN</span>
+
+   </div>
+
+   <div class="profile-dd-item">     My Profile</div>
+
+   <div class="profile-dd-item">     Account Settings</div>
+
+   <div class="profile-dd-item">     My Activity</div>
+
+   <div style="border-top:1px solid var(--border)"></div>
+
+   <div class="profile-dd-item danger">     Sign Out</div>
+
+  </div>
+
+ </div>
+
+</div>
+
+</header>
+
+
+
+<!-- ══════════════════════════════════════════
+
+  SIDEBAR
+
+══════════════════════════════════════════ -->
+
+<nav class="sidebar" id="sidebar">
+
+<div class="sidebar-toggle">
+
+ <button class="toggle-btn" id="sidebarToggle" title="Toggle sidebar">☰</button>
+
+</div>
+
+
+
+<div class="sidebar-nav">
+
+ <button class="nav-item active" data-section="users">
+
+  <span class="nav-icon">      </span>
+
+  <span class="nav-label">User Management</span>
+
+ </button>
+
+ <button class="nav-item" data-section="courses">
+
+  <span class="nav-icon">      </span>
+
+  <span class="nav-label">Course Management</span>
+
+ </button>
+
+ <button class="nav-item" data-section="analytics">
+
+  <span class="nav-icon">      </span>
+
+  <span class="nav-label">Performance Analytics</span>
+
+ </button>
+
+ <button class="nav-item" data-section="settings">
+
+  <span class="nav-icon">      </span>
+
+  <span class="nav-label">System Settings</span>
+ </button>
+
+ <button class="nav-item" data-section="activity">
+
+  <span class="nav-icon">      </span>
+
+  <span class="nav-label">Activity Monitoring</span>
+
+ </button>
+
+</div>
+
+
+
+<div class="sidebar-footer">
+
+ <div class="sidebar-version">v2.4.1 · LevelUP Admin</div>
+
+</div>
+
+</nav>
+
+
+
+<!-- ══════════════════════════════════════════
+
+  MAIN CONTENT
+
+══════════════════════════════════════════ -->
+
+<main class="main-wrapper" id="mainWrapper">
+
+
+
+<!-- ─────────────────── SECTION: User Management ─────────────────── -->
+
+<section class="section active" id="section-users">
+
+ <div class="page-header">
+
+  <h1>User Management</h1>
+
+  <p>View, manage, and control all platform users and their access.</p>
+
+ </div>
+
+
+
+ <!-- Stats quick row -->
+
+ <div class="stats-activity-grid" style="margin-top:0;margin-bottom:24px;">
+
+  <div class="stats-grid">
+
+   <div class="stat-card">
+
+    <div class="stat-top">
+
+     <div>
+
+      <div class="stat-value">1,240</div>
+
+      <div class="stat-label">Total Active Users</div>
+
+     </div>
+
+     <div class="stat-icon stat-icon-green">   </div>
+
+    </div>
+
+    <span class="stat-trend trend-up">▲ +12% this month</span>
+
+   </div>
+ <div class="stat-card">
+
+  <div class="stat-top">
+
+   <div>
+
+    <div class="stat-value">48</div>
+
+    <div class="stat-label">Courses Published</div>
+
+   </div>
+
+   <div class="stat-icon stat-icon-blue">     </div>
+
+  </div>
+
+  <span class="stat-trend trend-blue">▲ +4 new this week</span>
+
+ </div>
+
+ <div class="stat-card">
+
+  <div class="stat-top">
+
+   <div>
+
+    <div class="stat-value">24</div>
+
+    <div class="stat-label">Instructors Active</div>
+
+   </div>
+
+   <div class="stat-icon stat-icon-orange">     </div>
+
+  </div>
+
+  <span class="stat-trend trend-org">▲ +2 this month</span>
+
+ </div>
+
+ <div class="stat-card">
+
+  <div class="stat-top">
+
+   <div>
+
+    <div class="stat-value">3,450</div>
+
+    <div class="stat-label">Student Enrollments</div>
+
+   </div>
+
+   <div class="stat-icon stat-icon-purple">     </div>
+
+  </div>
+
+  <span class="stat-trend trend-pur">▲ +8.5% this month</span>
+
+ </div>
+
+</div>
+
+
+
+<!-- Activity Feed -->
+
+<div class="activity-card">
+
+ <div class="activity-header">
+
+  <h3>Activity Monitor</h3>
+
+  <div class="live-indicator"><span class="live-dot"></span>LIVE</div>
+   </div>
+
+   <div class="activity-list" id="activityList">
+
+    <div class="activity-item"><span class="activity-emoji"> </span><div><div class="activity-text">User 'Alice Johnson' created
+successfully</div><div class="activity-time">2 min ago</div></div></div>
+
+    <div class="activity-item"><span class="activity-emoji"> </span><div><div class="activity-text">Course 'Web Dev Bootcamp'
+published</div><div class="activity-time">5 min ago</div></div></div>
+
+    <div class="activity-item"><span class="activity-emoji"> </span><div><div class="activity-text">Student 'David Lee' enrolled in
+ML Course</div><div class="activity-time">12 min ago</div></div></div>
+
+    <div class="activity-item"><span class="activity-emoji"> </span><div><div class="activity-text">Assignment graded: Score
+92/100</div><div class="activity-time">18 min ago</div></div></div>
+
+     <div class="activity-item"><span class="activity-emoji"> </span><div><div class="activity-text">Admin login:
+alice@levelup.com</div><div class="activity-time">25 min ago</div></div></div>
+
+    <div class="activity-item"><span class="activity-emoji"> </span><div><div class="activity-text">New submission: Assignment 3
+SQL Queries</div><div class="activity-time">30 min ago</div></div></div>
+
+   <div class="activity-item"><span class="activity-emoji"> </span><div><div class="activity-text">User 'Test User' deleted by
+Admin</div><div class="activity-time">45 min ago</div></div></div>
+
+    <div class="activity-item"><span class="activity-emoji"> </span><div><div class="activity-text">System settings
+updated</div><div class="activity-time">1 hr ago</div></div></div>
+
+   </div>
+
+  </div>
+
+ </div>
+
+
+
+ <!-- User Table Card -->
+
+ <div class="card">
+
+  <div class="table-controls">
+
+   <div class="search-input-wrap">
+
+    <span class="s-icon">      </span>
+
+    <input type="text" id="userSearch" placeholder="Search users…" />
+
+   </div>
+
+   <select class="filter-select" id="roleFilter">
+
+    <option value="">All Roles</option>
+
+    <option value="ADMIN">Admin</option>
+
+    <option value="INSTRUCTOR">Instructor</option>
+
+    <option value="STUDENT">Student</option>
+
+   </select>
+
+   <select class="filter-select" id="statusFilter">
+
+    <option value="">All Status</option>
+
+    <option value="ACTIVE">Active</option>
+
+    <option value="INACTIVE">Inactive</option>
+
+   </select>
+   <button class="btn btn-purple" id="addUserBtn">＋ Add New User</button>
+
+  </div>
+
+
+
+  <div class="table-wrap">
+
+   <table id="userTable">
+
+    <thead>
+
+     <tr>
+
+      <th data-col="name">User <span class="sort-arrow"></span></th>
+
+      <th data-col="role">Role <span class="sort-arrow"></span></th>
+
+      <th data-col="status">Status <span class="sort-arrow"></span></th>
+
+      <th data-col="joined">Joined <span class="sort-arrow"></span></th>
+
+      <th>Actions</th>
+
+     </tr>
+
+    </thead>
+
+    <tbody id="userTableBody"></tbody>
+
+   </table>
+
+   <div class="table-empty" id="tableEmpty" style="display:none;">No users match your search.</div>
+
+  </div>
+
+ </div>
+
+</section>
+
+
+
+<!-- ─────────────────── SECTION: Course Management ─────────────────── -->
+
+<section class="section" id="section-courses">
+
+ <div class="page-header">
+
+  <h1>Course Management</h1>
+
+  <p>Manage all published and draft courses across the platform.</p>
+
+ </div>
+
+ <div class="card placeholder-section">
+
+  <div class="ph-icon">      </div>
+
+  <h2>Course Management</h2>
+
+   <p>This section lets you create, edit, and publish courses. Manage curriculum, assignments, and learner enrollment from one
+place.</p>
+
+  <button class="btn btn-orange">＋ Create New Course</button>
+
+ </div>
+
+</section>
+
+
+
+<!-- ─────────────────── SECTION: Performance Analytics ─────────────────── -->
+<section class="section" id="section-analytics">
+
+ <div class="page-header">
+
+  <h1>Performance Analytics</h1>
+
+  <p>Deep insights into course completion, grades, and revenue trends.</p>
+
+ </div>
+
+
+
+ <div class="analytics-cards">
+
+  <!-- Card 1: Donut -->
+
+  <div class="analytics-card">
+
+   <h3>       Course Completion Rate</h3>
+
+   <div class="donut-wrap">
+
+    <div class="donut-chart">
+
+     <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
+
+      <defs>
+
+       <linearGradient id="donutGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+
+          <stop offset="0%" style="stop-color:var(--primary-orange)"/>
+
+          <stop offset="100%" style="stop-color:var(--primary-purple)"/>
+
+       </linearGradient>
+
+      </defs>
+
+      <circle class="donut-track" cx="70" cy="70" r="54" />
+
+      <circle class="donut-fill" id="donutFill" cx="70" cy="70" r="54" />
+
+     </svg>
+
+     <div class="donut-label">
+
+      <div class="donut-pct">72%</div>
+
+      <div class="donut-sub">completion</div>
+
+     </div>
+
+    </div>
+
+    <div class="donut-legend" style="max-width:160px;">
+
+     <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(90deg,var(--primary-orange),var(--primary-purple))"></div><span class="legend-label">Completed</span><strong class="legend-val">72%</strong></div>
+
+     <div class="legend-item"><div class="legend-dot" style="background:#E2E8F0"></div><span class="legend-label">In
+Progress</span><strong class="legend-val">19%</strong></div>
+
+      <div class="legend-item"><div class="legend-dot" style="background:#F1F5F9"></div><span class="legend-label">Not
+Started</span><strong class="legend-val">9%</strong></div>
+
+    </div>
+
+   </div>
+
+  </div>
+  <!-- Card 2: Bar chart -->
+
+  <div class="analytics-card">
+
+   <h3>     Grade Distribution</h3>
+
+   <div class="bar-chart">
+
+     <div class="bar-row"><span class="bar-label">A</span><div class="bar-track"><div class="bar-fill bar-a"
+style="width:35%"></div></div><span class="bar-pct">35%</span></div>
+
+     <div class="bar-row"><span class="bar-label">B</span><div class="bar-track"><div class="bar-fill bar-b"
+style="width:28%"></div></div><span class="bar-pct">28%</span></div>
+
+     <div class="bar-row"><span class="bar-label">C</span><div class="bar-track"><div class="bar-fill bar-c"
+style="width:20%"></div></div><span class="bar-pct">20%</span></div>
+
+     <div class="bar-row"><span class="bar-label">D</span><div class="bar-track"><div class="bar-fill bar-d"
+style="width:12%"></div></div><span class="bar-pct">12%</span></div>
+
+     <div class="bar-row"><span class="bar-label">F</span><div class="bar-track"><div class="bar-fill bar-f"
+style="width:5%"></div></div><span class="bar-pct">5%</span></div>
+
+   </div>
+
+    <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border); font-size:.8rem; color:var(--text-muted);
+display:flex; justify-content:space-between;">
+
+    <span>Average Grade</span>
+
+    <strong style="color:var(--success)">B+ (83.4)</strong>
+
+   </div>
+
+  </div>
+
+
+
+  <!-- Card 3: Canvas line/area chart -->
+
+  <div class="analytics-card">
+
+   <h3>     Monthly Revenue</h3>
+
+   <div class="canvas-wrap">
+
+    <canvas id="revenueChart" height="180" style="width:100%;"></canvas>
+
+   </div>
+
+    <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border); font-size:.8rem; color:var(--text-muted);
+display:flex; justify-content:space-between;">
+
+    <span>This month</span>
+
+    <strong style="color:var(--success)">$24,800 ▲ 18%</strong>
+
+   </div>
+
+  </div>
+
+ </div>
+
+
+
+ <!-- Quick Stats -->
+
+ <div class="quick-stats">
+
+  <div class="qs-card">
+
+   <div class="qs-value" style="color:var(--primary-orange)">72%</div>
+  <div class="qs-label">Avg Completion Rate</div>
+
+ </div>
+
+ <div class="qs-card">
+
+  <div class="qs-value" style="color:var(--success)">B+</div>
+
+  <div class="qs-label">Average Grade</div>
+
+ </div>
+
+ <div class="qs-card">
+
+  <div class="qs-value" style="color:var(--primary-purple)">4.6<span style="font-size:1rem">/5</span></div>
+
+  <div class="qs-label">Student Satisfaction</div>
+
+ </div>
+
+ <div class="qs-card">
+
+  <div class="qs-value" style="color:var(--danger)">23</div>
+
+  <div class="qs-label">Assignments Pending</div>
+
+ </div>
+
+</div>
+
+</section>
+
+
+
+<!-- ─────────────────── SECTION: System Settings ─────────────────── -->
+
+<section class="section" id="section-settings">
+
+<div class="page-header">
+
+ <h1>System Settings</h1>
+
+ <p>Configure platform-wide settings, integrations, and permissions.</p>
+
+</div>
+
+<div class="card placeholder-section">
+
+ <div class="ph-icon">     </div>
+
+ <h2>System Settings</h2>
+
+ <p>Manage authentication methods, email notifications, API keys, storage, and billing configuration for LevelUP LMS.</p>
+
+ <button class="btn btn-ghost">Configure Settings</button>
+
+</div>
+
+</section>
+
+
+
+<!-- ─────────────────── SECTION: Activity Monitoring ─────────────────── -->
+
+<section class="section" id="section-activity">
+
+<div class="page-header">
+
+ <h1>Activity Monitoring</h1>
+
+ <p>Real-time log of all platform events and user actions.</p>
+
+</div>
+ <div class="card" style="padding:24px;">
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+
+   <h3 style="font-size:1rem;font-weight:700;">Live Event Stream</h3>
+
+   <div class="live-indicator"><span class="live-dot"></span>LIVE</div>
+
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:0;">
+
+    <div class="activity-item" style="padding:14px 0;border-left:3px solid var(--primary-orange);padding-left:16px;margin-bottom:4px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:#FFF7F0"><span class="activity-emoji"> </span><div><div class="activity-text">User 'Alice Johnson' created successfully</div><div class="activity-time">2 min ago ·
+IP 192.168.1.1</div></div></div>
+
+    <div class="activity-item" style="padding:14px 0;border-left:3px solid var(--accent-blue);padding-left:16px;margin-bottom:4px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:#EFF6FF"><span class="activity-emoji"> </span><div><div class="activity-text">Course 'Web Dev Bootcamp' published</div><div class="activity-time">5 min ago ·
+by instructor@levelup.com</div></div></div>
+
+   <div class="activity-item" style="padding:14px 0;border-left:3px solid var(--success);padding-left:16px;margin-bottom:4px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:#F0FDF4"><span class="activity-emoji"> </span><div><div class="activity-text">Student 'David Lee' enrolled in ML Course</div><div class="activity-time">12 min ago</div></div></div>
+
+    <div class="activity-item" style="padding:14px 0;border-left:3px solid var(--primary-purple);padding-left:16px;margin-bottom:4px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:#FAF5FF"><span class="activity-emoji"> </span><div><div class="activity-text">Assignment graded: Score 92/100</div><div class="activity-time">18 min
+ago</div></div></div>
+
+   <div class="activity-item" style="padding:14px 0;border-left:3px solid var(--danger);padding-left:16px;margin-bottom:4px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:#FFF1F2"><span class="activity-emoji"> </span><div><div class="activity-text">Admin login: alice@levelup.com</div><div class="activity-time">25 min ago · IP 203.0.113.5</div></div></div>
+
+    <div class="activity-item" style="padding:14px 0;border-left:3px solid var(--text-muted);padding-left:16px;margin-bottom:4px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:#F8FAFC"><span class="activity-emoji"> </span><div><div class="activity-text">New submission: Assignment 3 SQL Queries</div><div class="activity-time">30 min
+ago</div></div></div>
+
+   <div class="activity-item" style="padding:14px 0;border-left:3px solid var(--danger);padding-left:16px;margin-bottom:4px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:#FFF1F2"><span class="activity-emoji"> </span><div><div class="activity-text">User 'Test User' deleted by Admin</div><div class="activity-time">45 min ago</div></div></div>
+
+   <div class="activity-item" style="padding:14px 0;border-left:3px solid var(--text-muted);padding-left:16px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:#F8FAFC"><span class="activity-emoji"> </span><div><div class="activity-text">System
+settings updated</div><div class="activity-time">1 hr ago · by alice@levelup.com</div></div></div>
+
+  </div>
+
+ </div>
+
+</section>
+
+
+
+</main>
+
+
+
+<!-- ══════════════════════════════════════════
+
+  MODAL: Add / Edit User
+
+══════════════════════════════════════════ -->
+
+<div class="modal-overlay" id="userModal">
+<div class="modal">
+
+<div class="modal-header">
+
+ <h2 id="modalTitle">Add New User</h2>
+
+ <button class="modal-close" id="modalClose">✕</button>
+
+</div>
+
+<div class="modal-body">
+
+ <input type="hidden" id="editUserId" value="" />
+
+ <div class="form-group">
+
+  <label class="form-label">Full Name *</label>
+
+  <input type="text" class="form-input" id="fieldName" placeholder="e.g. John Doe" />
+
+  <span class="form-error" id="errName">Please enter a valid full name.</span>
+
+ </div>
+
+ <div class="form-group">
+
+  <label class="form-label">Email Address *</label>
+
+  <input type="email" class="form-input" id="fieldEmail" placeholder="john@example.com" />
+
+  <span class="form-error" id="errEmail">Please enter a valid email address.</span>
+
+ </div>
+
+ <div class="form-group" id="passwordGroup">
+
+  <label class="form-label">Password *</label>
+
+  <input type="password" class="form-input" id="fieldPassword" placeholder="Min. 8 characters" />
+
+  <span class="form-error" id="errPassword">Password must be at least 8 characters.</span>
+
+ </div>
+
+ <div class="form-group">
+
+  <label class="form-label">Role *</label>
+
+  <select class="form-input filter-select" id="fieldRole" style="padding:10px 32px 10px 14px;">
+
+   <option value="">Select a role…</option>
+
+   <option value="ADMIN">Admin</option>
+
+   <option value="INSTRUCTOR">Instructor</option>
+
+   <option value="STUDENT">Student</option>
+
+  </select>
+
+  <span class="form-error" id="errRole">Please select a role.</span>
+
+ </div>
+
+</div>
+
+<div class="modal-footer">
+
+ <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+
+ <button class="btn btn-purple" id="modalSubmit">Create User</button>
+
+</div>
+ </div>
+
+</div>
+
+
+
+<!-- ══════════════════════════════════════════
+
+     CONFIRM DIALOG
+
+══════════════════════════════════════════ -->
+
+<div class="confirm-overlay" id="confirmOverlay">
+
+ <div class="confirm-box">
+
+     <div class="confirm-icon">      </div>
+
+     <h3>Delete User</h3>
+
+     <p id="confirmMsg">Are you sure you want to delete this user? This action cannot be undone.</p>
+
+     <div class="confirm-actions">
+
+      <button class="btn btn-ghost" id="confirmCancel">Cancel</button>
+
+      <button class="btn btn-danger" id="confirmOk">Delete</button>
+
+     </div>
+
+ </div>
+
+</div>
+
+
+
+<!-- ══════════════════════════════════════════
+
+     TOAST CONTAINER
+
+══════════════════════════════════════════ -->
+
+<div class="toast-container" id="toastContainer"></div>
+
+
+
+
+<script>
+
+/* ═════════════════════════════════════════════════════
+
+     DATA
+
+═════════════════════════════════════════════════════ */
+
+const avatarColors = {
+
+ ADMIN: 'avatar-admin',
+
+ INSTRUCTOR: 'avatar-ins',
+
+ STUDENT: 'avatar-stu'
+
+};
+
+
+
+let users = [
+
+ { id: 1, name: 'Alice Johnson', initials: 'AJ', email: 'alice@levelup.com', role: 'ADMIN',   status: 'ACTIVE', joined: '2024-01-15' },
+
+ { id: 2, name: 'Bob Smith',   initials: 'BS', email: 'bob@levelup.com', role: 'INSTRUCTOR', status: 'ACTIVE', joined: '2024-02-08' },
+    { id: 3, name: 'Carol Davis', initials: 'CD', email: 'carol@levelup.com', role: 'STUDENT', status: 'ACTIVE', joined: '2024-03-22' },
+
+    { id: 4, name: 'David Lee',    initials: 'DL', email: 'david@levelup.com', role: 'STUDENT', status: 'ACTIVE', joined: '2024-04-05' },
+
+    { id: 5, name: 'Emma Wilson', initials: 'EW', email: 'emma@levelup.com', role: 'STUDENT', status: 'INACTIVE', joined: '2024-04-19' },
+
+    { id: 6, name: 'Frank Miller', initials: 'FM', email: 'frank@levelup.com', role: 'INSTRUCTOR', status: 'ACTIVE', joined: '2024-05-03' },
+
+    { id: 7, name: 'Grace Chen',    initials: 'GC', email: 'grace@levelup.com', role: 'STUDENT', status: 'ACTIVE', joined: '2024-06-11' },
+
+    { id: 8, name: 'Henry Park', initials: 'HP', email: 'henry@levelup.com', role: 'STUDENT', status: 'ACTIVE', joined: '2024-07-30' },
+
+];
+
+let nextId = 9;
+
+let sortCol = null, sortDir = 'asc';
+
+
+
+/* ═════════════════════════════════════════════════════
+
+     TOAST
+
+═════════════════════════════════════════════════════ */
+
+function showToast(msg, type = 'success') {
+
+    const c = document.getElementById('toastContainer');
+
+    const icons = { success: '     ', error: '   ', info: '   ' };
+
+    const t = document.createElement('div');
+
+    t.className = `toast ${type}`;
+
+    t.innerHTML = `<span>${icons[type]}</span> ${msg}`;
+
+    c.appendChild(t);
+
+    setTimeout(() => {
+
+     t.style.animation = 'slideOutRight .3s ease forwards';
+
+     setTimeout(() => t.remove(), 320);
+
+    }, 3000);
+
+}
+
+
+
+/* ═════════════════════════════════════════════════════
+
+     TABLE RENDERING
+
+═════════════════════════════════════════════════════ */
+
+function roleBadge(role) {
+
+    const map = { ADMIN: 'badge-admin', INSTRUCTOR: 'badge-ins', STUDENT: 'badge-stu' };
+
+    return `<span class="role-badge ${map[role] || ''}">${role}</span>`;
+
+}
+
+function statusBadge(st) {
+
+    return `<span class="role-badge ${st === 'ACTIVE' ? 'badge-active' : 'badge-inactive'}">${st}</span>`;
+
+}
+
+function fmtDate(d) {
+    const dt = new Date(d);
+
+    return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+}
+
+function getInitials(name) {
+
+    return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+}
+
+
+
+function renderTable() {
+
+    const search = document.getElementById('userSearch').value.toLowerCase().trim();
+
+    const roleF = document.getElementById('roleFilter').value;
+
+    const statF = document.getElementById('statusFilter').value;
+
+
+
+    let filtered = users.filter(u => {
+
+        const matchSearch = !search || u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search);
+
+        const matchRole = !roleF || u.role === roleF;
+
+        const matchStat = !statF || u.status === statF;
+
+        return matchSearch && matchRole && matchStat;
+
+    });
+
+
+
+    if (sortCol) {
+
+        filtered.sort((a, b) => {
+
+         const av = (a[sortCol] || '').toLowerCase();
+
+         const bv = (b[sortCol] || '').toLowerCase();
+
+         return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+
+        });
+
+    }
+
+
+
+    const tbody = document.getElementById('userTableBody');
+
+    const empty = document.getElementById('tableEmpty');
+
+
+
+    if (filtered.length === 0) {
+
+        tbody.innerHTML = '';
+
+        empty.style.display = 'block';
+
+    } else {
+
+        empty.style.display = 'none';
+
+        tbody.innerHTML = filtered.map(u => `
+
+         <tr data-id="${u.id}">
+          <td>
+
+           <div class="user-cell">
+
+            <div class="avatar ${avatarColors[u.role] || 'avatar-stu'}">${u.initials}</div>
+
+            <div>
+
+              <div class="user-info-name">${u.name}</div>
+
+              <div class="user-info-email">${u.email}</div>
+
+            </div>
+
+           </div>
+
+          </td>
+
+          <td>${roleBadge(u.role)}</td>
+
+          <td>${statusBadge(u.status)}</td>
+
+          <td style="color:var(--text-muted);font-size:.83rem;">${fmtDate(u.joined)}</td>
+
+          <td>
+
+           <div style="display:flex;gap:6px;">
+
+            <button class="action-btn edit" onclick="openEditModal(${u.id})">           Edit</button>
+
+            <button class="action-btn del" onclick="openConfirm(${u.id})">            Delete</button>
+
+           </div>
+
+          </td>
+
+         </tr>
+
+        `).join('');
+
+    }
+
+
+
+    // Update sort arrows
+
+    document.querySelectorAll('thead th[data-col]').forEach(th => {
+
+        th.classList.remove('sort-asc', 'sort-desc');
+
+        if (th.dataset.col === sortCol) th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+
+    });
+
+}
+
+
+
+// Sort on th click
+
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+
+    th.addEventListener('click', () => {
+
+        const col = th.dataset.col;
+
+        if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+
+        else { sortCol = col; sortDir = 'asc'; }
+
+        renderTable();
+
+    });
+});
+
+
+
+document.getElementById('userSearch').addEventListener('input', renderTable);
+
+document.getElementById('roleFilter').addEventListener('change', renderTable);
+
+document.getElementById('statusFilter').addEventListener('change', renderTable);
+
+
+
+renderTable();
+
+
+
+/* ═════════════════════════════════════════════════════
+
+  MODAL: ADD / EDIT
+
+═════════════════════════════════════════════════════ */
+
+const modal      = document.getElementById('userModal');
+
+const modalTitle = document.getElementById('modalTitle');
+
+const modalSubmit = document.getElementById('modalSubmit');
+
+const editUserId = document.getElementById('editUserId');
+
+const pwGroup      = document.getElementById('passwordGroup');
+
+
+
+function openModal(mode = 'add', user = null) {
+
+ modal.classList.add('open');
+
+ clearModalErrors();
+
+ ['fieldName','fieldEmail','fieldPassword','fieldRole'].forEach(id => {
+
+  document.getElementById(id).value = '';
+
+  document.getElementById(id).classList.remove('error');
+
+ });
+
+
+
+ if (mode === 'add') {
+
+  modalTitle.textContent = 'Add New User';
+
+  modalSubmit.textContent = 'Create User';
+
+  editUserId.value = '';
+
+  pwGroup.style.display = '';
+
+ } else {
+
+  modalTitle.textContent = 'Edit User';
+
+  modalSubmit.textContent = 'Save Changes';
+
+  editUserId.value = user.id;
+
+  document.getElementById('fieldName').value = user.name;
+
+  document.getElementById('fieldEmail').value = user.email;
+
+  document.getElementById('fieldRole').value = user.role;
+        pwGroup.style.display = 'none';
+
+    }
+
+}
+
+
+
+function closeModal() { modal.classList.remove('open'); }
+
+document.getElementById('addUserBtn').addEventListener('click', () => openModal('add'));
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+
+
+function openEditModal(id) {
+
+    const user = users.find(u => u.id === id);
+
+    if (user) openModal('edit', user);
+
+}
+
+
+
+function clearModalErrors() {
+
+    ['errName','errEmail','errPassword','errRole'].forEach(id => {
+
+        document.getElementById(id).classList.remove('show');
+
+    });
+
+}
+
+
+
+function validateModal() {
+
+    clearModalErrors();
+
+    let ok = true;
+
+    const name = document.getElementById('fieldName').value.trim();
+
+    const email = document.getElementById('fieldEmail').value.trim();
+
+    const pass = document.getElementById('fieldPassword').value;
+
+    const role = document.getElementById('fieldRole').value;
+
+    const isEdit = !!editUserId.value;
+
+
+
+    if (name.length < 2) {
+
+        document.getElementById('errName').classList.add('show');
+
+        document.getElementById('fieldName').classList.add('error');
+
+        ok = false;
+
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+
+        document.getElementById('errEmail').classList.add('show');
+        document.getElementById('fieldEmail').classList.add('error');
+
+        ok = false;
+
+    }
+
+    if (!isEdit && pass.length < 8) {
+
+        document.getElementById('errPassword').classList.add('show');
+
+        document.getElementById('fieldPassword').classList.add('error');
+
+        ok = false;
+
+    }
+
+    if (!role) {
+
+        document.getElementById('errRole').classList.add('show');
+
+        document.getElementById('fieldRole').classList.add('error');
+
+        ok = false;
+
+    }
+
+    return ok;
+
+}
+
+
+
+modalSubmit.addEventListener('click', () => {
+
+    if (!validateModal()) return;
+
+
+
+    const name = document.getElementById('fieldName').value.trim();
+
+    const email = document.getElementById('fieldEmail').value.trim();
+
+    const role = document.getElementById('fieldRole').value;
+
+    const isEdit = !!editUserId.value;
+
+
+
+    if (isEdit) {
+
+        const uid = parseInt(editUserId.value);
+
+        const u = users.find(x => x.id === uid);
+
+        if (u) {
+
+            u.name     = name;
+
+            u.email = email;
+
+            u.role   = role;
+
+            u.initials = getInitials(name);
+
+        }
+
+        showToast(`User "${name}" updated successfully!`, 'success');
+
+        addActivityItem('        ', `User '${name}' profile updated`);
+
+    } else {
+
+        const newUser = {
+         id: nextId++,
+
+         name, email, role,
+
+         initials: getInitials(name),
+
+         status: 'ACTIVE',
+
+         joined: new Date().toISOString().split('T')[0]
+
+        };
+
+        users.unshift(newUser);
+
+        showToast(`User "${name}" created successfully!`, 'success');
+
+        addActivityItem('     ', `User '${name}' created successfully`);
+
+    }
+
+
+
+    closeModal();
+
+    renderTable();
+
+});
+
+
+
+/* ═════════════════════════════════════════════════════
+
+    CONFIRM DIALOG
+
+═════════════════════════════════════════════════════ */
+
+let pendingDeleteId = null;
+
+const confirmOverlay = document.getElementById('confirmOverlay');
+
+
+
+function openConfirm(id) {
+
+    pendingDeleteId = id;
+
+    const user = users.find(u => u.id === id);
+
+    document.getElementById('confirmMsg').textContent =
+
+        `Are you sure you want to delete "${user ? user.name : 'this user'}"? This action cannot be undone.`;
+
+    confirmOverlay.classList.add('open');
+
+}
+
+
+
+document.getElementById('confirmCancel').addEventListener('click', () => {
+
+    confirmOverlay.classList.remove('open');
+
+    pendingDeleteId = null;
+
+});
+
+confirmOverlay.addEventListener('click', e => {
+
+    if (e.target === confirmOverlay) {
+
+        confirmOverlay.classList.remove('open');
+
+        pendingDeleteId = null;
+ }
+
+});
+
+document.getElementById('confirmOk').addEventListener('click', () => {
+
+ if (pendingDeleteId !== null) {
+
+     const user = users.find(u => u.id === pendingDeleteId);
+
+     const name = user ? user.name : 'User';
+
+     users = users.filter(u => u.id !== pendingDeleteId);
+
+     renderTable();
+
+     confirmOverlay.classList.remove('open');
+
+     pendingDeleteId = null;
+
+     showToast(`User "${name}" deleted.`, 'error');
+
+     addActivityItem('       ', `User '${name}' deleted by Admin`);
+
+ }
+
+});
+
+
+
+/* ═════════════════════════════════════════════════════
+
+  SIDEBAR TOGGLE
+
+═════════════════════════════════════════════════════ */
+
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+
+ document.body.classList.toggle('sidebar-collapsed');
+
+});
+
+
+
+/* ═════════════════════════════════════════════════════
+
+  NAV LINKS / SECTIONS
+
+═════════════════════════════════════════════════════ */
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+
+ btn.addEventListener('click', () => {
+
+     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+     btn.classList.add('active');
+
+     const sec = btn.dataset.section;
+
+     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+     const target = document.getElementById('section-' + sec);
+
+     if (target) {
+
+         target.classList.add('active');
+
+         // Draw revenue chart if analytics section activated
+
+         if (sec === 'analytics') setTimeout(drawRevenueChart, 80);
+
+     }
+ });
+
+});
+
+
+
+/* ═════════════════════════════════════════════════════
+
+  BELL DROPDOWN
+
+═════════════════════════════════════════════════════ */
+
+const bellBtn      = document.getElementById('bellBtn');
+
+const notifDropdown = document.getElementById('notifDropdown');
+
+bellBtn.addEventListener('click', e => {
+
+ e.stopPropagation();
+
+ notifDropdown.classList.toggle('open');
+
+ profileDropdown.classList.remove('open');
+
+ profileBtn.classList.remove('open');
+
+});
+
+
+
+/* ═════════════════════════════════════════════════════
+
+  PROFILE DROPDOWN
+
+═════════════════════════════════════════════════════ */
+
+const profileBtn    = document.getElementById('profileBtn');
+
+const profileDropdown = document.getElementById('profileDropdown');
+
+profileBtn.addEventListener('click', e => {
+
+ e.stopPropagation();
+
+ profileDropdown.classList.toggle('open');
+
+ profileBtn.classList.toggle('open');
+
+ notifDropdown.classList.remove('open');
+
+});
+
+
+
+document.addEventListener('click', () => {
+
+ notifDropdown.classList.remove('open');
+
+ profileDropdown.classList.remove('open');
+
+ profileBtn.classList.remove('open');
+
+});
+
+
+
+/* ═════════════════════════════════════════════════════
+
+  ACTIVITY FEED HELPER
+
+═════════════════════════════════════════════════════ */
+
+function addActivityItem(emoji, text) {
+    const list = document.getElementById('activityList');
+
+    const item = document.createElement('div');
+
+    item.className = 'activity-item';
+
+    item.style.animation = 'fadeDown .3s ease';
+
+ item.innerHTML = `<span class="activity-emoji">${emoji}</span><div><div class="activity-text">${text}</div><div class="activity-time">Just now</div></div>`;
+
+    list.insertBefore(item, list.firstChild);
+
+    // Remove last if too long
+
+    if (list.children.length > 10) list.removeChild(list.lastChild);
+
+}
+
+
+
+/* ═════════════════════════════════════════════════════
+
+    REVENUE CHART (Canvas)
+
+═════════════════════════════════════════════════════ */
+
+function drawRevenueChart() {
+
+    const canvas = document.getElementById('revenueChart');
+
+    if (!canvas) return;
+
+    const parent = canvas.parentElement;
+
+    canvas.width = parent.offsetWidth;
+
+    canvas.height = 180;
+
+    const ctx = canvas.getContext('2d');
+
+    const W = canvas.width, H = canvas.height;
+
+
+
+    const data = [8200, 11400, 9800, 14300, 13100, 17600, 15800, 19400, 18200, 21700, 22900, 24800];
+
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    const maxV = Math.max(...data);
+
+    const pad = { top: 18, right: 10, bottom: 32, left: 46 };
+
+    const cW = W - pad.left - pad.right;
+
+    const cH = H - pad.top - pad.bottom;
+
+
+
+    ctx.clearRect(0, 0, W, H);
+
+
+
+    // Grid lines
+
+    ctx.strokeStyle = '#E2E8F0';
+
+    ctx.lineWidth = 1;
+
+    [0, .25, .5, .75, 1].forEach(t => {
+
+     const y = pad.top + cH * (1 - t);
+
+     ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
+    ctx.fillStyle = '#94A3B8';
+
+    ctx.font    = '10px system-ui';
+
+    ctx.textAlign = 'right';
+
+    ctx.fillText('$' + Math.round(maxV * t / 1000) + 'k', pad.left - 6, y + 4);
+
+});
+
+
+
+// Points
+
+const pts = data.map((v, i) => ({
+
+    x: pad.left + (i / (data.length - 1)) * cW,
+
+    y: pad.top + cH * (1 - v / maxV)
+
+}));
+
+
+
+// Gradient fill
+
+const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
+
+grad.addColorStop(0, 'rgba(249,115,22,.35)');
+
+grad.addColorStop(.5, 'rgba(124,58,237,.18)');
+
+grad.addColorStop(1, 'rgba(249,115,22,0)');
+
+
+
+ctx.beginPath();
+
+ctx.moveTo(pts[0].x, pts[0].y);
+
+for (let i = 1; i < pts.length; i++) {
+
+    const cp1x = (pts[i-1].x + pts[i].x) / 2;
+
+    ctx.bezierCurveTo(cp1x, pts[i-1].y, cp1x, pts[i].y, pts[i].x, pts[i].y);
+
+}
+
+ctx.lineTo(pts[pts.length-1].x, pad.top + cH);
+
+ctx.lineTo(pts[0].x, pad.top + cH);
+
+ctx.closePath();
+
+ctx.fillStyle = grad;
+
+ctx.fill();
+
+
+
+// Line
+
+const lineGrad = ctx.createLinearGradient(pad.left, 0, pad.left + cW, 0);
+
+lineGrad.addColorStop(0, '#F97316');
+
+lineGrad.addColorStop(1, '#7C3AED');
+
+ctx.beginPath();
+
+ctx.moveTo(pts[0].x, pts[0].y);
+
+for (let i = 1; i < pts.length; i++) {
+        const cp1x = (pts[i-1].x + pts[i].x) / 2;
+
+        ctx.bezierCurveTo(cp1x, pts[i-1].y, cp1x, pts[i].y, pts[i].x, pts[i].y);
+
+    }
+
+    ctx.strokeStyle = lineGrad;
+
+    ctx.lineWidth = 2.5;
+
+    ctx.lineJoin = 'round';
+
+    ctx.stroke();
+
+
+
+    // Dots
+
+    pts.forEach((p, i) => {
+
+        ctx.beginPath();
+
+        ctx.arc(p.x, p.y, i === pts.length - 1 ? 5 : 3.5, 0, Math.PI * 2);
+
+        ctx.fillStyle = i === pts.length - 1 ? '#F97316' : '#fff';
+
+        ctx.strokeStyle = i === pts.length - 1 ? '#fff' : '#7C3AED';
+
+        ctx.lineWidth = 2;
+
+        ctx.fill();
+
+        ctx.stroke();
+
+    });
+
+
+
+    // Month labels
+
+    ctx.fillStyle = '#94A3B8';
+
+    ctx.font          = '9.5px system-ui';
+
+    ctx.textAlign = 'center';
+
+    pts.forEach((p, i) => {
+
+        ctx.fillText(months[i], p.x, H - 6);
+
+    });
+
+}
+
+
+
+/* ═════════════════════════════════════════════════════
+
+    DONUT CHART ANIMATION
+
+═════════════════════════════════════════════════════ */
+
+// 72% of circumference = 339.3 * 0.72 = 244.3
+
+// stroke-dashoffset = 339.3 - 244.3 = 95 (already set in CSS)
+
+// Animate on page load
+
+window.addEventListener('load', () => {
+
+    const fill = document.getElementById('donutFill');
+
+    if (fill) {
+     fill.style.strokeDashoffset = '339.3'; // start hidden
+
+     setTimeout(() => {
+
+         fill.style.strokeDashoffset = '95'; // animate to 72%
+
+     }, 200);
+
+ }
+
+ // Draw chart if analytics is default visible
+
+ const analyticsSection = document.getElementById('section-analytics');
+
+ if (analyticsSection && analyticsSection.classList.contains('active')) {
+
+     drawRevenueChart();
+
+ }
+
+});
+
+
+
+// Redraw chart on window resize
+
+window.addEventListener('resize', () => {
+
+ const analyticsSection = document.getElementById('section-analytics');
+
+ if (analyticsSection && analyticsSection.classList.contains('active')) {
+
+     drawRevenueChart();
+
+ }
+
+});
+
+
+
+/* ═════════════════════════════════════════════════════
+
+  GLOBAL SEARCH (highlight active nav)
+
+═════════════════════════════════════════════════════ */
+
+document.getElementById('globalSearch').addEventListener('keydown', e => {
+
+ if (e.key === 'Enter') {
+
+     const val = e.target.value.trim();
+
+     if (val) {
+
+         // Switch to users section and apply search
+
+         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+         document.querySelector('[data-section="users"]').classList.add('active');
+
+         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+         document.getElementById('section-users').classList.add('active');
+
+         document.getElementById('userSearch').value = val;
+
+         renderTable();
+
+         showToast(`Searching for "${val}"…`, 'info');
+
+     }
+
+ }
+});
+
+</script>
+
+</body>
+
+</html>
